@@ -50,7 +50,7 @@ fn append_3_bytes(b1: &u8, b2: &u8, b3: &u8) -> String {
     result
 }
 
-pub fn encode(plantuml: String) -> String {
+pub fn encode_plantuml_deflate(plantuml: String) -> String {
     let mut encoder = DeflateEncoder::new(Vec::new(), Compression::default());
     encoder.write_all(plantuml.as_bytes()).unwrap();
 
@@ -75,23 +75,13 @@ pub fn encode(plantuml: String) -> String {
     result
 }
 
-fn decode_reader(bytes: Vec<u8>) -> String {
-    let mut writer = Vec::new();
-    let mut deflater = DeflateDecoder::new(writer);
+fn decode_6_bit(s: String) -> u8 {
+    let c = s.chars().next().unwrap() as u8;
 
-    deflater.write_all(&bytes[..]).unwrap();
-    writer = deflater.finish().unwrap();
-
-    String::from_utf8(writer).unwrap()
-}
-
-fn decode_6_bit(cc: String) -> u8 {
-    let c = cc.chars().next().unwrap() as u8;
-
-    if cc == "_" {
+    if s == "_" {
         return 63;
     };
-    if cc == "-" {
+    if s == "-" {
         return 62;
     }
     if c >= 97 {
@@ -107,8 +97,8 @@ fn decode_6_bit(cc: String) -> u8 {
     0
 }
 
-fn extract_3_bytes(data: &str) -> [u8; 3] {
-    let mut chars = data.chars();
+fn extract_3_bytes(s: &str) -> [u8; 3] {
+    let mut chars = s.chars();
 
     let c1 = decode_6_bit(String::from(chars.next().unwrap()));
     let c2 = decode_6_bit(String::from(chars.next().unwrap()));
@@ -122,18 +112,63 @@ fn extract_3_bytes(data: &str) -> [u8; 3] {
     [b1, b2, b3]
 }
 
-pub fn decode(encoded_plantuml: String) -> String {
+pub fn decode_plantuml_deflate(plantuml_deflated: String) -> String {
     let mut result = vec![];
 
-    for (index, _) in encoded_plantuml.chars().enumerate().step_by(4) {
-        let extract_3_bytes = extract_3_bytes(&encoded_plantuml[index..index + 4]);
+    for (index, _) in plantuml_deflated.chars().enumerate().step_by(4) {
+        let extract_3_bytes = extract_3_bytes(&plantuml_deflated[index..index + 4]);
 
         result.push(extract_3_bytes[0]);
         result.push(extract_3_bytes[1]);
         result.push(extract_3_bytes[2]);
     }
 
-    decode_reader(result)
+    let mut deflater = DeflateDecoder::new(Vec::new());
+    deflater.write_all(&result).unwrap();
+
+    String::from_utf8(deflater.finish().unwrap()).unwrap()
+}
+
+pub fn encode_plantuml_hex(plantuml: String) -> String {
+    let hex = hex::encode(plantuml);
+    let encoded_bytes = hex.as_bytes();
+
+    let mut result = String::new();
+
+    for (index, byte) in encoded_bytes.iter().enumerate().step_by(3) {
+        if index + 2 == encoded_bytes.len() {
+            result += &append_3_bytes(byte, &encoded_bytes[index + 1], &0);
+            continue;
+        }
+
+        if index + 1 == encoded_bytes.len() {
+            result += &append_3_bytes(byte, &0, &0);
+            continue;
+        }
+
+        result += &append_3_bytes(byte, &encoded_bytes[index + 1], &encoded_bytes[index + 2]);
+    }
+
+    String::from("~h") + &result
+}
+
+pub fn decode_plantuml_hex(plantuml_hex: String) -> String {
+    let mut result = vec![];
+
+    let plantuml_hex_trimmed = plantuml_hex.trim_start_matches("~h");
+
+    for (index, _) in plantuml_hex_trimmed.chars().enumerate().step_by(4) {
+        let extract_3_bytes = extract_3_bytes(&plantuml_hex_trimmed[index..index + 4]);
+
+        result.push(extract_3_bytes[0]);
+        result.push(extract_3_bytes[1]);
+        result.push(extract_3_bytes[2]);
+    }
+
+    let hex = String::from_utf8(result).unwrap();
+    let hexh_trimed = hex.trim_matches(char::from(0));
+
+    String::from_utf8(hex::decode(hexh_trimed).unwrap()).unwrap()
 }
 
 #[cfg(test)]
@@ -141,15 +176,33 @@ mod tests {
     use super::*;
 
     const PLANTUML: &str = "A -> B: Hello";
-    const ENCODED_PLANTUML: &str = "SrJGjLDmibBmICt9oGS0";
+
+    const PLANTUML_DEFLATED: &str = "SrJGjLDmibBmICt9oGS0";
+    const PLANTUML_HEX: &str = "~hD34oC39aCsKoC3GoCs4oC3GuDZKsOpPZDcO0";
 
     #[test]
-    fn it_encode() {
-        assert_eq!(encode(String::from(PLANTUML)), ENCODED_PLANTUML);
+    fn it_encode_plantuml_deflate() {
+        assert_eq!(
+            encode_plantuml_deflate(String::from(PLANTUML)),
+            PLANTUML_DEFLATED
+        );
     }
 
     #[test]
-    fn it_decode() {
-        assert_eq!(decode(String::from(ENCODED_PLANTUML)), PLANTUML);
+    fn it_decode_plantuml_deflate() {
+        assert_eq!(
+            decode_plantuml_deflate(String::from(PLANTUML_DEFLATED)),
+            PLANTUML
+        );
+    }
+
+    #[test]
+    fn it_encode_plantuml_hex() {
+        assert_eq!(encode_plantuml_hex(String::from(PLANTUML)), PLANTUML_HEX);
+    }
+
+    #[test]
+    fn it_decode_plantuml_hex() {
+        assert_eq!(decode_plantuml_hex(String::from(PLANTUML_HEX)), PLANTUML);
     }
 }
