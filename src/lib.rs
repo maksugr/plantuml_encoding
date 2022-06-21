@@ -1,6 +1,6 @@
-mod constants;
 mod deflate;
 mod hex;
+mod tests;
 mod utils;
 
 pub use crate::deflate::{decode_plantuml_deflate, encode_plantuml_deflate};

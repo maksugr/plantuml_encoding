@@ -44,7 +44,7 @@ fn append_3_bytes(b1: &u8, b2: &u8, b3: &u8) -> String {
     result
 }
 
-pub fn plantuml_encode(encoded_bytes: &[u8]) -> String {
+pub fn encode_plantuml_for_deflate(encoded_bytes: &[u8]) -> String {
     let mut result = String::new();
 
     for (index, byte) in encoded_bytes.iter().enumerate().step_by(3) {
@@ -101,7 +101,7 @@ fn extract_3_bytes(s: &str) -> [u8; 3] {
     [b1, b2, b3]
 }
 
-pub fn plantuml_decode(decoded_string: &str) -> Vec<u8> {
+pub fn decode_plantuml_for_deflate(decoded_string: &str) -> Vec<u8> {
     let mut result = vec![];
 
     for (index, _) in decoded_string.chars().enumerate().step_by(4) {
@@ -113,4 +113,48 @@ pub fn plantuml_decode(decoded_string: &str) -> Vec<u8> {
     }
 
     result
+}
+
+#[cfg(test)]
+mod test {
+    use super::{decode_plantuml_for_deflate, encode_plantuml_for_deflate};
+
+    use crate::tests::constants::{
+        plantuml_for_deflate_str::{
+            PLANTUML_FOR_DEFLATE_ENCODED_LARGE, PLANTUML_FOR_DEFLATE_ENCODED_SMALL,
+        },
+        plantuml_for_deflate_u8::{PLANTUML_FOR_DEFLATE_RAW_LARGE, PLANTUML_FOR_DEFLATE_RAW_SMALL},
+    };
+
+    #[test]
+    fn it_encode_plantuml_for_deflate_small() {
+        assert_eq!(
+            encode_plantuml_for_deflate(&PLANTUML_FOR_DEFLATE_RAW_SMALL),
+            PLANTUML_FOR_DEFLATE_ENCODED_SMALL
+        );
+    }
+
+    #[test]
+    fn it_decode_plantuml_for_deflate_small() {
+        assert_eq!(
+            decode_plantuml_for_deflate(PLANTUML_FOR_DEFLATE_ENCODED_SMALL),
+            PLANTUML_FOR_DEFLATE_RAW_SMALL
+        );
+    }
+
+    #[test]
+    fn it_encode_plantuml_for_deflate_large() {
+        assert_eq!(
+            encode_plantuml_for_deflate(&PLANTUML_FOR_DEFLATE_RAW_LARGE),
+            PLANTUML_FOR_DEFLATE_ENCODED_LARGE
+        );
+    }
+
+    #[test]
+    fn it_decode_plantuml_for_deflate_large() {
+        assert_eq!(
+            decode_plantuml_for_deflate(PLANTUML_FOR_DEFLATE_ENCODED_LARGE),
+            PLANTUML_FOR_DEFLATE_RAW_LARGE
+        );
+    }
 }
