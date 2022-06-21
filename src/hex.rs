@@ -1,40 +1,18 @@
-use crate::utils::{append_3_bytes, extract_3_bytes};
+use crate::utils::{plantuml_decode, plantuml_encode};
 
 pub fn encode_plantuml_hex(plantuml: String) -> String {
     let hex = hex::encode(plantuml);
     let encoded_bytes = hex.as_bytes();
 
-    let mut result = String::new();
-
-    for (index, byte) in encoded_bytes.iter().enumerate().step_by(3) {
-        if index + 2 == encoded_bytes.len() {
-            result += &append_3_bytes(byte, &encoded_bytes[index + 1], &0);
-            continue;
-        }
-
-        if index + 1 == encoded_bytes.len() {
-            result += &append_3_bytes(byte, &0, &0);
-            continue;
-        }
-
-        result += &append_3_bytes(byte, &encoded_bytes[index + 1], &encoded_bytes[index + 2]);
-    }
+    let result = plantuml_encode(encoded_bytes);
 
     String::from("~h") + &result
 }
 
 pub fn decode_plantuml_hex(plantuml_hex: String) -> String {
-    let mut result = vec![];
-
     let plantuml_hex_trimmed = plantuml_hex.trim_start_matches("~h");
 
-    for (index, _) in plantuml_hex_trimmed.chars().enumerate().step_by(4) {
-        let extract_3_bytes = extract_3_bytes(&plantuml_hex_trimmed[index..index + 4]);
-
-        result.push(extract_3_bytes[0]);
-        result.push(extract_3_bytes[1]);
-        result.push(extract_3_bytes[2]);
-    }
+    let result = plantuml_decode(plantuml_hex_trimmed);
 
     let hex = String::from_utf8(result).unwrap();
     let hexh_trimed = hex.trim_matches(char::from(0));
