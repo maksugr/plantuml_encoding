@@ -116,7 +116,7 @@ pub fn decode_plantuml_for_deflate(decoded_string: &str) -> Option<Vec<u8>> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::{decode_plantuml_for_deflate, encode_plantuml_for_deflate};
 
     use crate::tests::constants::{

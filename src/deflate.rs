@@ -15,6 +15,7 @@ pub fn encode_plantuml_deflate<T: AsRef<str>>(
     Ok(utils::encode_plantuml_for_deflate(&encoded_bytes))
 }
 
+#[allow(clippy::unused_io_amount)]
 pub fn decode_plantuml_deflate<T: AsRef<str>>(
     plantuml_deflated: T,
 ) -> Result<String, errors::PlantumDecodeError> {
@@ -28,8 +29,10 @@ pub fn decode_plantuml_deflate<T: AsRef<str>>(
     };
 
     let mut deflater = write::DeflateDecoder::new(Vec::new());
-    deflater.write_all(&result)?;
-
+    for item in result.into_iter() {
+        // write_all produces `failed to write whole buffer` issue with some data
+        deflater.write(&[item])?;
+    }
     let decoded_bytes = deflater.finish()?;
 
     Ok(String::from_utf8(decoded_bytes)?)

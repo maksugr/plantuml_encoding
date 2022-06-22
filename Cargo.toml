@@ -2,6 +2,18 @@
 name = "plantuml_encoding"
 version = "0.1.0"
 edition = "2021"
+authors = ["maksugr <maksugr@gmail.com>"]
+description = "Encoding and decoding text plantuml diagrams to facilitate communication of them through URL"
+license = "MIT OR Apache-2.0"
+documentation = "https://docs.rs/plantuml_encoding/"
+homepage = "https://github.com/maksugr/plantuml_encoding"
+repository = "https://github.com/maksugr/plantuml_encoding"
+readme = "README.md"
+keywords = ["plantuml", "encoding", "decoding", "deflate", "hex"]
+categories = ["plantuml", "encoding", "decoding"]
+
+[badges]
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 flate2 = "1.0.24"
