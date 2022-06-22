@@ -17,7 +17,7 @@
 [deps-svg]: https://deps.rs/repo/github/maksugr/plantuml_encoding/status.svg
 [deps-url]: https://deps.rs/repo/github/maksugr/plantuml_encoding
 
-It encodes and decodes text plantuml diagrams to facilitate communication of them through URL.
+Encoding and decoding text plantuml diagrams to facilitate communication of them through URL.
 
 ## Overview
 

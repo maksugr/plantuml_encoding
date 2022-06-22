@@ -1,9 +1,9 @@
 [package]
 name = "plantuml_encoding"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["maksugr <maksugr@gmail.com>"]
-description = "Encoding and decoding text plantuml diagrams to facilitate communication of them through URL"
+description = "Encoding and decoding text plantuml diagrams to facilitate communication of them through URL."
 license = "MIT OR Apache-2.0"
 documentation = "https://docs.rs/plantuml_encoding/"
 homepage = "https://github.com/maksugr/plantuml_encoding"

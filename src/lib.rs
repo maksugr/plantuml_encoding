@@ -1,4 +1,4 @@
-//! It encodes and decodes text plantuml diagrams to facilitate communication of them through URL.
+//! Encoding and decoding text plantuml diagrams to facilitate communication of them through URL.
 //!
 //! ## Overview
 //!
