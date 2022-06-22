@@ -7,8 +7,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
 jobs:
-  test:
-    name: coverage
+  coverage:
     runs-on:  ubuntu-latest
     container:
       image: xd009642/tarpaulin:develop-nightly
