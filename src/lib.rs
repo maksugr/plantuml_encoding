@@ -28,7 +28,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! plantuml_encoding = "0.1.0"
+//! plantuml_encoding = "0.1.4"
 //! ```
 
 mod deflate;
