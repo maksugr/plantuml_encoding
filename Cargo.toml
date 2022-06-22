@@ -10,7 +10,7 @@ homepage = "https://github.com/maksugr/plantuml_encoding"
 repository = "https://github.com/maksugr/plantuml_encoding"
 readme = "README.md"
 keywords = ["plantuml", "encoding", "decoding", "deflate", "hex"]
-categories = ["plantuml", "encoding", "decoding"]
+categories = ["encoding"]
 
 [badges]
 maintenance = { status = "actively-developed" }
