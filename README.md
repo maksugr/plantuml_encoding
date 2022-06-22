@@ -1,19 +1,21 @@
 # plantuml_encoding
 
-[![ga-svg]][ga-url]
+[![build-svg]][build-url]
+[![codecov-svg]][codecov-url]
 [![crates-svg]][crates-url]
 [![docs-svg]][docs-url]
-[![codecov-svg]][codecov-url]
 [![deps-svg]][deps-url]
 
-[ga-svg]: https://github.com/maksugr/plantuml_encoding/workflows/build/badge.svg
-[ga-url]: https://github.com/maksugr/plantuml_encoding/actions
+[build-svg]: https://github.com/maksugr/plantuml_encoding/workflows/build/badge.svg
+[build-url]: https://github.com/maksugr/plantuml_encoding/actions/workflows/build.yml
+[test-svg]: https://github.com/maksugr/plantuml_encoding/workflows/test/badge.svg
+[test-url]: https://github.com/maksugr/plantuml_encoding/actions/workflows/test.yml
+[codecov-svg]: https://img.shields.io/codecov/c/github/maksugr/plantuml_encoding
+[codecov-url]: https://codecov.io/gh/maksugr/plantuml_encoding
 [crates-svg]: https://img.shields.io/crates/v/plantuml_encoding.svg
 [crates-url]: https://crates.io/crates/plantuml_encoding
 [docs-svg]: https://docs.rs/plantuml_encoding/badge.svg
 [docs-url]: https://docs.rs/plantuml_encoding
-[codecov-svg]: https://img.shields.io/codecov/c/github/maksugr/plantuml_encoding
-[codecov-url]: https://codecov.io/gh/maksugr/plantuml_encoding
 [deps-svg]: https://deps.rs/repo/github/maksugr/plantuml_encoding/status.svg
 [deps-url]: https://deps.rs/repo/github/maksugr/plantuml_encoding
 
