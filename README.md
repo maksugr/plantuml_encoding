@@ -1,6 +1,7 @@
 # plantuml_encoding
 
 [![build-svg]][build-url]
+[![test-svg]][test-url]
 [![codecov-svg]][codecov-url]
 [![crates-svg]][crates-url]
 [![docs-svg]][docs-url]
