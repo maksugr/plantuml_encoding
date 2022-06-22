@@ -42,7 +42,7 @@ Plantuml [declares support](https://plantuml.com/text-encoding) for the followin
 * [brotli](https://en.wikipedia.org/wiki/Brotli)
 * [hex](https://en.wikipedia.org/wiki/Hexadecimal)
 
-But in fact, plantuml supports only `deflate` and `hex` ([`brotli` is turned off](https://forum.plantuml.net/15341/encoding-does-brotli-not-work-anymore-programatically-curl?show=15349)). So the crate supports only `deflate` and `hex` too.
+But in fact, plantuml supports only `deflate` (with [additional transformations close to base64](https://plantuml.com/text-encoding)) and `hex` (with [additional prefix `~h`](https://plantuml.com/text-encoding)). [`brotli` is turned off](https://forum.plantuml.net/15341/encoding-does-brotli-not-work-anymore-programatically-curl?show=15349). So the crate supports only `deflate` and `hex` too.
 
 ## Installation
 
@@ -52,3 +52,122 @@ In order to use this crate, you have to add it under `[dependencies]` to your `C
 [dependencies]
 plantuml_encoding = "0.1.4"
 ```
+
+## Examples
+
+```rust
+use plantuml_encoding::{
+    decode_plantuml_deflate, decode_plantuml_hex,
+    encode_plantuml_deflate, encode_plantuml_hex,
+    PlantumlDecodingError,
+};
+
+fn main() -> Result<(), PlantumlDecodingError> {
+    // original puml
+    println!("--- Original puml ---");
+
+    let puml = "@startuml\nPUML -> RUST\n@enduml";
+
+    println!("Original puml:\n{}\n", puml);
+
+    // deflate
+    println!("--- Deflate ---");
+
+    let encoded_deflate = encode_plantuml_deflate(puml)?;
+    let decoded_deflate = decode_plantuml_deflate(&encoded_deflate)?;
+
+    println!("Encoded deflate: {}", encoded_deflate);
+    println!("Decoded deflate:\n{}\n", decoded_deflate);
+
+    // hex
+    println!("--- Hex ---");
+
+    let encoded_hex = encode_plantuml_hex(puml)?;
+    let decoded_hex = decode_plantuml_hex(&encoded_hex)?;
+
+    println!("Encoded hex: {}", encoded_hex);
+    println!("Decoded hex:\n{}\n", decoded_hex);
+
+    // deflate errors
+    println!("--- Deflate errors ---");
+
+    let empty_encoded_deflate = "";
+
+    let decoded_deflate = decode_plantuml_deflate(empty_encoded_deflate)
+        .unwrap_or_else(|_| "It's not decoded deflate".to_string());
+
+    println!("Decoded deflate error:\n{}\n", decoded_deflate);
+
+    let decoded_deflate = match decode_plantuml_deflate(empty_encoded_deflate) {
+        Ok(plantuml) => plantuml,
+        Err(PlantumlDecodingError::Deflate(err)) => {
+            eprintln!("Decoded deflate error: {:?}", err);
+            String::from("Result from deflate error")
+        }
+        Err(PlantumlDecodingError::Hex(err)) => {
+            eprintln!("Decoded hex error: {:?}", err);
+            String::from("Result from hex error")
+        }
+    };
+
+    println!("Match decoded deflate error result:\n{}\n", decoded_deflate);
+
+    // hex errors
+    println!("--- Hex errors ---");
+
+    let decoded_hex = match decode_plantuml_hex("12345") {
+        Ok(plantuml) => plantuml,
+        Err(PlantumlDecodingError::Deflate(err)) => {
+            eprintln!("Decoded deflate error: {:?}", err);
+            String::from("Result from deflate error")
+        }
+        Err(PlantumlDecodingError::Hex(err)) => {
+            eprintln!("Decoded hex error: {:?}", err);
+            String::from("Result from hex error")
+        }
+    };
+
+    println!("Match decoded hex error result:\n{}", decoded_hex);
+
+    Ok(())
+}
+```
+
+And console output after `cargo run` for these examples:
+
+```console
+--- Original puml ---
+Original puml:
+@startuml
+PUML -> RUST
+@enduml
+
+--- Deflate ---
+Encoded deflate: SoWkIImgAStDuGe8zVLHqBLJ20eD3k5oICrB0Ge20000
+Decoded deflate:
+@startuml
+PUML -> RUST
+@enduml
+
+--- Hex ---
+Encoded hex: ~h407374617274756d6c0a50554d4c202d3e20525553540a40656e64756d6c
+Decoded hex:
+@startuml
+PUML -> RUST
+@enduml
+
+--- Deflate errors ---
+Decoded deflate error:
+It's not decoded deflate
+
+Decoded deflate error: "there is a problem during deflate decoding: `deflate decompression error`"
+Match decoded deflate error result:
+Result from deflate error
+
+--- Hex errors ---
+Decoded hex error: "there is a problem during hex decoding: `Odd number of digits`"
+Match decoded hex error result:
+Result from hex error
+```
+
+Also, you can consider tests inside the files.
