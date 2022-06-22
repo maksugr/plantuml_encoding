@@ -64,55 +64,55 @@ pub fn encode_plantuml_for_deflate(encoded_bytes: &[u8]) -> String {
     result
 }
 
-fn decode_6_bit(s: String) -> u8 {
-    let c = s.chars().next().unwrap() as u8;
+fn decode_6_bit(s: String) -> Option<u8> {
+    let c = s.chars().next()? as u8;
 
     if s == "_" {
-        return 63;
+        return Some(63);
     };
     if s == "-" {
-        return 62;
+        return Some(62);
     }
     if c >= 97 {
-        return c - 61;
+        return Some(c - 61);
     }
     if c >= 65 {
-        return c - 55;
+        return Some(c - 55);
     }
     if c >= 48 {
-        return c - 48;
+        return Some(c - 48);
     }
 
-    0
+    Some(0)
 }
 
-fn extract_3_bytes(s: &str) -> [u8; 3] {
+fn extract_3_bytes(s: &str) -> Option<[u8; 3]> {
     let mut chars = s.chars();
 
-    let c1 = decode_6_bit(String::from(chars.next().unwrap()));
-    let c2 = decode_6_bit(String::from(chars.next().unwrap()));
-    let c3 = decode_6_bit(String::from(chars.next().unwrap()));
-    let c4 = decode_6_bit(String::from(chars.next().unwrap()));
+    let c1 = decode_6_bit(String::from(chars.next()?))?;
+    let c2 = decode_6_bit(String::from(chars.next()?))?;
+    let c3 = decode_6_bit(String::from(chars.next()?))?;
+    let c4 = decode_6_bit(String::from(chars.next()?))?;
 
     let b1 = c1 << 2 | (c2 >> 4) & 0x3F;
     let b2 = (c2 << 4) & 0xF0 | (c3 >> 2) & 0xF;
     let b3 = (c3 << 6) & 0xC0 | c4 & 0x3F;
 
-    [b1, b2, b3]
+    Some([b1, b2, b3])
 }
 
-pub fn decode_plantuml_for_deflate(decoded_string: &str) -> Vec<u8> {
+pub fn decode_plantuml_for_deflate(decoded_string: &str) -> Option<Vec<u8>> {
     let mut result = vec![];
 
     for (index, _) in decoded_string.chars().enumerate().step_by(4) {
-        let extract_3_bytes = extract_3_bytes(&decoded_string[index..index + 4]);
+        let extract_3_bytes = extract_3_bytes(decoded_string.get(index..index + 4)?)?;
 
         result.push(extract_3_bytes[0]);
         result.push(extract_3_bytes[1]);
         result.push(extract_3_bytes[2]);
     }
 
-    result
+    Some(result)
 }
 
 #[cfg(test)]
@@ -138,7 +138,7 @@ mod test {
     fn it_decode_plantuml_for_deflate_small() {
         assert_eq!(
             decode_plantuml_for_deflate(PLANTUML_FOR_DEFLATE_ENCODED_SMALL),
-            PLANTUML_FOR_DEFLATE_RAW_SMALL
+            Some(PLANTUML_FOR_DEFLATE_RAW_SMALL.to_vec())
         );
     }
 
@@ -154,7 +154,12 @@ mod test {
     fn it_decode_plantuml_for_deflate_large() {
         assert_eq!(
             decode_plantuml_for_deflate(PLANTUML_FOR_DEFLATE_ENCODED_LARGE),
-            PLANTUML_FOR_DEFLATE_RAW_LARGE
+            Some(PLANTUML_FOR_DEFLATE_RAW_LARGE.to_vec())
         );
+    }
+
+    #[test]
+    fn it_decode_plantuml_for_deflate_out_of_bounds_error() {
+        assert_eq!(decode_plantuml_for_deflate("some strange string"), None);
     }
 }
