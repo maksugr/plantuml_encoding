@@ -81,8 +81,7 @@ mod tests {
         assert_eq!(
             decode_plantuml_hex("12345"),
             Err(errors::PlantumDecodeError::Hex(
-                "there is problem a problem during hex deconding: `Odd number of digits`"
-                    .to_string()
+                "there is a problem during hex decoding: `Odd number of digits`".to_string()
             ))
         );
     }

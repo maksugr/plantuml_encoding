@@ -101,7 +101,8 @@ mod tests {
         assert_eq!(
             decode_plantuml_deflate("4444"),
             Err(errors::PlantumDecodeError::Deflate(
-                "there is problem a problem during deflate deconding: `deflate decompression error`".to_string()
+                "there is a problem during deflate decoding: `deflate decompression error`"
+                    .to_string()
             ))
         );
     }
