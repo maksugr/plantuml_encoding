@@ -50,7 +50,7 @@ In order to use this crate, you have to add it under `[dependencies]` to your `C
 
 ```toml
 [dependencies]
-plantuml_encoding = "1.0.0"
+plantuml_encoding = "1.0.1"
 ```
 
 ## Examples

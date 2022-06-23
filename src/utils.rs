@@ -86,13 +86,13 @@ fn decode_6_bit(s: String) -> Option<u8> {
     Some(0)
 }
 
-fn extract_3_bytes(s: &str) -> Option<[u8; 3]> {
-    let mut chars = s.chars();
+fn extract_3_bytes(chars: &[char]) -> Option<[u8; 3]> {
+    let mut chars = chars.iter();
 
-    let c1 = decode_6_bit(String::from(chars.next()?))?;
-    let c2 = decode_6_bit(String::from(chars.next()?))?;
-    let c3 = decode_6_bit(String::from(chars.next()?))?;
-    let c4 = decode_6_bit(String::from(chars.next()?))?;
+    let c1 = decode_6_bit(String::from(*chars.next()?))?;
+    let c2 = decode_6_bit(String::from(*chars.next()?))?;
+    let c3 = decode_6_bit(String::from(*chars.next()?))?;
+    let c4 = decode_6_bit(String::from(*chars.next()?))?;
 
     let b1 = c1 << 2 | (c2 >> 4) & 0x3F;
     let b2 = (c2 << 4) & 0xF0 | (c3 >> 2) & 0xF;
@@ -104,12 +104,8 @@ fn extract_3_bytes(s: &str) -> Option<[u8; 3]> {
 pub fn decode_plantuml_for_deflate(decoded_string: &str) -> Option<Vec<u8>> {
     let mut result = vec![];
 
-    for (index, _) in decoded_string.chars().enumerate().step_by(4) {
-        let extract_3_bytes = extract_3_bytes(decoded_string.get(index..index + 4)?)?;
-
-        result.push(extract_3_bytes[0]);
-        result.push(extract_3_bytes[1]);
-        result.push(extract_3_bytes[2]);
+    for chunk in decoded_string.chars().collect::<Vec<char>>().chunks(4) {
+        result.extend(extract_3_bytes(chunk)?);
     }
 
     Some(result)
