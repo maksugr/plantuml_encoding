@@ -28,7 +28,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! plantuml_encoding = "1.0.1"
+//! plantuml_encoding = "2.0.2"
 //! ```
 //!
 //! ## Examples
