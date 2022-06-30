@@ -104,10 +104,6 @@ fn main() -> Result<(), FromPlantumlError> {
             eprintln!("Decoded deflate error: {:?}", err);
             String::from("Result from deflate error")
         }
-        Err(FromPlantumlError(err)) => {
-            eprintln!("Decoded hex error: {:?}", err);
-            String::from("Result from hex error")
-        }
     };
 
     println!("Match decoded deflate error result:\n{}\n", decoded_deflate);
@@ -117,10 +113,6 @@ fn main() -> Result<(), FromPlantumlError> {
 
     let decoded_hex = match decode_plantuml_hex("12345") {
         Ok(plantuml) => plantuml,
-        Err(FromPlantumlError(err)) => {
-            eprintln!("Decoded deflate error: {:?}", err);
-            String::from("Result from deflate error")
-        }
         Err(FromPlantumlError(err)) => {
             eprintln!("Decoded hex error: {:?}", err);
             String::from("Result from hex error")
