@@ -37,10 +37,10 @@
 //! use plantuml_encoding::{
 //!     decode_plantuml_deflate, decode_plantuml_hex,
 //!     encode_plantuml_deflate, encode_plantuml_hex,
-//!     PlantumlDecodingError,
+//!     FromPlantumlError,
 //! };
 //!
-//! fn main() -> Result<(), PlantumlDecodingError> {
+//! fn main() -> Result<(), FromPlantumlError> {
 //!     // original puml
 //!     println!("--- Original puml ---");
 //!
@@ -78,11 +78,11 @@
 //!
 //!     let decoded_deflate = match decode_plantuml_deflate(empty_encoded_deflate) {
 //!         Ok(plantuml) => plantuml,
-//!         Err(PlantumlDecodingError::Deflate(err)) => {
+//!         Err(FromPlantumlError(err)) => {
 //!             eprintln!("Decoded deflate error: {:?}", err);
 //!             String::from("Result from deflate error")
 //!         }
-//!         Err(PlantumlDecodingError::Hex(err)) => {
+//!         Err(FromPlantumlError(err)) => {
 //!             eprintln!("Decoded hex error: {:?}", err);
 //!             String::from("Result from hex error")
 //!         }
@@ -95,11 +95,11 @@
 //!
 //!     let decoded_hex = match decode_plantuml_hex("12345") {
 //!         Ok(plantuml) => plantuml,
-//!         Err(PlantumlDecodingError::Deflate(err)) => {
+//!         Err(FromPlantumlError(err)) => {
 //!             eprintln!("Decoded deflate error: {:?}", err);
 //!             String::from("Result from deflate error")
 //!         }
-//!         Err(PlantumlDecodingError::Hex(err)) => {
+//!         Err(FromPlantumlError(err)) => {
 //!             eprintln!("Decoded hex error: {:?}", err);
 //!             String::from("Result from hex error")
 //!         }
@@ -157,5 +157,5 @@ mod tests;
 mod utils;
 
 pub use crate::deflate::{decode_plantuml_deflate, encode_plantuml_deflate};
-pub use crate::errors::PlantumlDecodingError;
+pub use crate::errors::FromPlantumlError;
 pub use crate::hex::{decode_plantuml_hex, encode_plantuml_hex};

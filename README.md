@@ -59,10 +59,10 @@ plantuml_encoding = "1.0.1"
 use plantuml_encoding::{
     decode_plantuml_deflate, decode_plantuml_hex,
     encode_plantuml_deflate, encode_plantuml_hex,
-    PlantumlDecodingError,
+    FromPlantumlError,
 };
 
-fn main() -> Result<(), PlantumlDecodingError> {
+fn main() -> Result<(), FromPlantumlError> {
     // original puml
     println!("--- Original puml ---");
 
@@ -100,11 +100,11 @@ fn main() -> Result<(), PlantumlDecodingError> {
 
     let decoded_deflate = match decode_plantuml_deflate(empty_encoded_deflate) {
         Ok(plantuml) => plantuml,
-        Err(PlantumlDecodingError::Deflate(err)) => {
+        Err(FromPlantumlError(err)) => {
             eprintln!("Decoded deflate error: {:?}", err);
             String::from("Result from deflate error")
         }
-        Err(PlantumlDecodingError::Hex(err)) => {
+        Err(FromPlantumlError(err)) => {
             eprintln!("Decoded hex error: {:?}", err);
             String::from("Result from hex error")
         }
@@ -117,11 +117,11 @@ fn main() -> Result<(), PlantumlDecodingError> {
 
     let decoded_hex = match decode_plantuml_hex("12345") {
         Ok(plantuml) => plantuml,
-        Err(PlantumlDecodingError::Deflate(err)) => {
+        Err(FromPlantumlError(err)) => {
             eprintln!("Decoded deflate error: {:?}", err);
             String::from("Result from deflate error")
         }
-        Err(PlantumlDecodingError::Hex(err)) => {
+        Err(FromPlantumlError(err)) => {
             eprintln!("Decoded hex error: {:?}", err);
             String::from("Result from hex error")
         }

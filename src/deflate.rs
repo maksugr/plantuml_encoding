@@ -10,9 +10,9 @@ use crate::utils;
 /// ## Example
 ///
 /// ```rust
-/// use plantuml_encoding::{encode_plantuml_deflate, PlantumlDecodingError};
+/// use plantuml_encoding::{encode_plantuml_deflate, FromPlantumlError};
 ///
-/// fn main() -> Result<(), PlantumlDecodingError> {
+/// fn main() -> Result<(), FromPlantumlError> {
 ///     let encoded_deflate = encode_plantuml_deflate("@startuml\nPUML -> RUST\n@enduml")?;
 ///
 ///     assert_eq!(encoded_deflate, "SoWkIImgAStDuGe8zVLHqBLJ20eD3k5oICrB0Ge20000");
@@ -22,7 +22,7 @@ use crate::utils;
 /// ```
 pub fn encode_plantuml_deflate<T: AsRef<str>>(
     plantuml: T,
-) -> Result<String, errors::PlantumlDecodingError> {
+) -> Result<String, errors::FromPlantumlError> {
     let mut encoder = write::DeflateEncoder::new(Vec::new(), flate2::Compression::default());
     encoder.write_all(plantuml.as_ref().as_bytes())?;
 
@@ -37,9 +37,9 @@ pub fn encode_plantuml_deflate<T: AsRef<str>>(
 /// ## Example
 ///
 /// ```rust
-/// use plantuml_encoding::{decode_plantuml_deflate, PlantumlDecodingError};
+/// use plantuml_encoding::{decode_plantuml_deflate, FromPlantumlError};
 ///
-/// fn main() -> Result<(), PlantumlDecodingError> {
+/// fn main() -> Result<(), FromPlantumlError> {
 ///     let decoded_deflate = decode_plantuml_deflate("SoWkIImgAStDuGe8zVLHqBLJ20eD3k5oICrB0Ge20000")?;
 ///
 ///     assert_eq!(decoded_deflate, "@startuml\nPUML -> RUST\n@enduml");
@@ -50,11 +50,11 @@ pub fn encode_plantuml_deflate<T: AsRef<str>>(
 #[allow(clippy::unused_io_amount)]
 pub fn decode_plantuml_deflate<T: AsRef<str>>(
     plantuml_deflated: T,
-) -> Result<String, errors::PlantumlDecodingError> {
+) -> Result<String, errors::FromPlantumlError> {
     let result = match utils::decode_plantuml_for_deflate(plantuml_deflated.as_ref()) {
         Some(r) => r,
         None => {
-            return Err(errors::PlantumlDecodingError::Deflate(
+            return Err(errors::FromPlantumlError(
                 "internal decoding error (out of bounds or similar)".to_string(),
             ));
         }
@@ -132,7 +132,7 @@ mod tests {
     fn it_decode_plantuml_deflate_regular_error() {
         assert_eq!(
             decode_plantuml_deflate("4444"),
-            Err(errors::PlantumlDecodingError::Deflate(
+            Err(errors::FromPlantumlError(
                 "there is a problem during deflate decoding: `deflate decompression error`"
                     .to_string()
             ))
@@ -143,7 +143,7 @@ mod tests {
     fn it_decode_plantuml_deflate_out_of_bounds_error() {
         assert_eq!(
             decode_plantuml_deflate("some strange string"),
-            Err(errors::PlantumlDecodingError::Deflate(
+            Err(errors::FromPlantumlError(
                 "internal decoding error (out of bounds or similar)".to_string()
             ))
         );

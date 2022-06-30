@@ -1,36 +1,28 @@
 use std::{convert, io, string};
 
-/// If error appear, the crate always faults to error type `PlantumlDecodingError`.
+/// If error appear, the crate always faults to error type `FromPlantumlError`.
 /// All other error types converted to this one.
 /// No panic is expected.
 #[derive(Debug, PartialEq)]
-pub enum PlantumlDecodingError {
-    /// Source of the error - deflate decoding
-    Deflate(String),
-    /// Source of the error - hex decoding
-    Hex(String),
-}
+pub struct FromPlantumlError(pub String);
 
-impl convert::From<string::FromUtf8Error> for PlantumlDecodingError {
+impl convert::From<string::FromUtf8Error> for FromPlantumlError {
     fn from(err: string::FromUtf8Error) -> Self {
-        PlantumlDecodingError::Deflate(format!(
-            "there is a problem during deflate decoding: `{}`",
-            err
-        ))
+        FromPlantumlError(format!("there is a problem during decoding: `{}`", err))
     }
 }
 
-impl convert::From<io::Error> for PlantumlDecodingError {
+impl convert::From<io::Error> for FromPlantumlError {
     fn from(err: io::Error) -> Self {
-        PlantumlDecodingError::Deflate(format!(
+        FromPlantumlError(format!(
             "there is a problem during deflate decoding: `{}`",
             err
         ))
     }
 }
 
-impl convert::From<hex::FromHexError> for PlantumlDecodingError {
+impl convert::From<hex::FromHexError> for FromPlantumlError {
     fn from(err: hex::FromHexError) -> Self {
-        PlantumlDecodingError::Hex(format!("there is a problem during hex decoding: `{}`", err))
+        FromPlantumlError(format!("there is a problem during hex decoding: `{}`", err))
     }
 }
