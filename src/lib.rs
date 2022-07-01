@@ -28,8 +28,12 @@
 //!
 //! ```toml
 //! [dependencies]
-//! plantuml_encoding = "2.0.2"
+//! plantuml_encoding = "2.0.3"
 //! ```
+//!
+//! ## Article
+//!
+//! There is an [article](https://maksugr.com/posts/plantuml-encoding-in-rust-using-tdd) very close describing the library under the hood.
 //!
 //! ## Examples
 //!
