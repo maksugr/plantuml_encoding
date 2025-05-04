@@ -1,4 +1,4 @@
-use std::{convert, io, string};
+use std::{convert, error, fmt, io, string};
 
 /// If error appear, the crate always faults to error type `FromPlantumlError`.
 /// All other error types converted to this one.
@@ -24,5 +24,13 @@ impl convert::From<io::Error> for FromPlantumlError {
 impl convert::From<hex::FromHexError> for FromPlantumlError {
     fn from(err: hex::FromHexError) -> Self {
         FromPlantumlError(format!("there is a problem during hex decoding: `{}`", err))
+    }
+}
+
+impl error::Error for FromPlantumlError {}
+
+impl fmt::Display for FromPlantumlError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
